@@ -5,60 +5,72 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.component.html.Span;
 
-/**
- * A sample Vaadin view class.
- * <p>
- * To implement a Vaadin view just extend any Vaadin component and use @Route
- * annotation to announce it in a URL as a Spring managed bean.
- * <p>
- * A new instance of this class is created for every new user and every browser
- * tab/window.
- * <p>
- * The main view contains a text field for getting the user name and a button
- * that shows a greeting message in a notification.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 @Route
 public class MainView extends VerticalLayout {
 
+    private List<String> tasks = new ArrayList<>();
+    private VerticalLayout taskLayout = new VerticalLayout();
+
     /**
      * Construct a new Vaadin view.
-     * <p>
-     * Build the initial UI state for the user accessing the application.
      *
-     * @param service
-     *            The message service. Automatically injected Spring managed
-     *            bean.
+     * @param greetService The greet service.
+     * @param taskService  The task service.
      */
-    public MainView(@Autowired GreetService service) {
+    public MainView(@Autowired GreetService greetService, @Autowired TaskService taskService) {
 
         // Use TextField for standard text input
-        TextField textField = new TextField("Your name");
+        TextField textField = new TextField("Enter Task");
+        textField.setPlaceholder("Enter your task");
         textField.addClassName("bordered");
 
-        // Button click listeners can be defined as lambda expressions
-        Button button = new Button("Say hello", e -> {
-            add(new Paragraph(service.greet(textField.getValue())));
+        // Add Task Button
+        Button addButton = new Button("Add Task", e -> {
+            String task = textField.getValue();
+            String result = taskService.addTask(task, tasks);
+            Notification.show(result);
+            if (result.equals("Task " + task + " Added")) {
+                updateTaskList(taskService);
+                textField.clear();
+            }
         });
 
-        // Theme variants give you predefined extra styles for components.
-        // Example: Primary button has a more prominent look.
-        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        // You can specify keyboard shortcuts for buttons.
-        // Example: Pressing enter in this view clicks the Button.
-        button.addClickShortcut(Key.ENTER);
+        // Style buttons
+        addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        // Use custom CSS classes to apply styling. This is defined in
-        // styles.css.
-        addClassName("centered-content");
+        // Add components to layout
+        add(textField, addButton, taskLayout);
 
-        add(textField, button);
+        // Initialize the task list display
+        updateTaskList(taskService);
     }
 
+    private void updateTaskList(TaskService taskService) {
+        taskLayout.removeAll();
+        for (String task : tasks) {
+            HorizontalLayout taskItemLayout = new HorizontalLayout();
+            Span taskSpan = new Span(task);
+            Button deleteButton = new Button("Delete", e -> {
+                String result = taskService.deleteTask(task, tasks);
+                Notification.show(result);
+                if (result.equals("Task " + task + " Deleted")) {
+                    updateTaskList(taskService);
+                }
+            });
+            deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            taskItemLayout.add(taskSpan, deleteButton);
+            taskLayout.add(taskItemLayout);
+        }
+    }
 }
