@@ -2,7 +2,6 @@ package org.vaadin.example;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.notification.Notification;
@@ -18,16 +17,15 @@ import java.util.List;
 @Route
 public class MainView extends VerticalLayout {
 
-    private List<String> tasks = new ArrayList<>();
-    private VerticalLayout taskLayout = new VerticalLayout();
+    private final List<String> tasks = new ArrayList<>();
+    private final VerticalLayout taskLayout = new VerticalLayout();
 
     /**
      * Construct a new Vaadin view.
      *
-     * @param greetService The greet service.
-     * @param taskService  The task service.
+     * @param taskService The task service.
      */
-    public MainView(@Autowired GreetService greetService, @Autowired TaskService taskService) {
+    public MainView(@Autowired TaskService taskService) {
 
         // Use TextField for standard text input
         TextField textField = new TextField("Enter Task");
@@ -44,7 +42,6 @@ public class MainView extends VerticalLayout {
                 textField.clear();
             }
         });
-
 
         // Style buttons
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
