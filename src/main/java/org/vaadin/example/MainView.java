@@ -3,7 +3,6 @@ package org.vaadin.example;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -42,9 +41,10 @@ public class MainView extends VerticalLayout {
                 textField.clear();
             }
         });
+        addButton.addClassName("add-button");
 
         // Style buttons
-        addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        addClassName("centered-content");
 
         // Add components to layout
         add(textField, addButton, taskLayout);
@@ -57,6 +57,7 @@ public class MainView extends VerticalLayout {
         taskLayout.removeAll();
         for (String task : tasks) {
             HorizontalLayout taskItemLayout = new HorizontalLayout();
+            taskItemLayout.addClassName("task-item");
             Span taskSpan = new Span(task);
             Button deleteButton = new Button("Delete", e -> {
                 String result = taskService.deleteTask(task, tasks);
@@ -65,7 +66,7 @@ public class MainView extends VerticalLayout {
                     updateTaskList(taskService);
                 }
             });
-            deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            deleteButton.addClassName("delete-button");
             taskItemLayout.add(taskSpan, deleteButton);
             taskLayout.add(taskItemLayout);
         }
