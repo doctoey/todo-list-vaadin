@@ -51,6 +51,11 @@ public class MainView extends VerticalLayout {
 
         // Initialize the task list display
         updateTaskList(taskService);
+
+        Button adminButton = new Button("Go to Admin Page", e -> {
+            getUI().ifPresent(ui -> ui.navigate("admin"));
+        });
+        add(adminButton);
     }
 
     private void updateTaskList(TaskService taskService) {
