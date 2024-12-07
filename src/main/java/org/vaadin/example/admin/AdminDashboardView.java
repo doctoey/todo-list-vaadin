@@ -2,8 +2,11 @@ package org.vaadin.example.admin;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -15,6 +18,7 @@ public class AdminDashboardView extends VerticalLayout {
         // Page title
         H1 title = new H1("Admin Dashboard");
         title.getStyle().set("text-align", "center");
+        title.addClassName("page-title");
 
         // Navigation bar
         HorizontalLayout navigationBar = createNavigationBar();
@@ -25,13 +29,15 @@ public class AdminDashboardView extends VerticalLayout {
 
         // Left panel (analytics summary)
         VerticalLayout leftPanel = new VerticalLayout();
+        leftPanel.addClassName("left-panel");
         leftPanel.setWidth("30%");
         leftPanel.add(createAnalyticsSummary());
 
         // Right panel (details and data grid)
         VerticalLayout rightPanel = new VerticalLayout();
+        rightPanel.addClassName("right-panel");
         rightPanel.setWidth("70%");
-        rightPanel.add(createMockDataGrid());
+        rightPanel.add(createStyledMockDataGrid());
 
         mainContent.add(leftPanel, rightPanel);
 
@@ -41,6 +47,7 @@ public class AdminDashboardView extends VerticalLayout {
         footer.getStyle().set("text-align", "center").set("margin-top", "20px");
 
         // Add components to the main layout
+        addClassName("dashboard-layout");
         add(title, navigationBar, mainContent, footer);
     }
 
@@ -50,27 +57,30 @@ public class AdminDashboardView extends VerticalLayout {
         Button dashboard = new Button("Dashboard");
         Button settings = new Button("Settings");
         HorizontalLayout navBar = new HorizontalLayout(home, dashboard, settings);
+        navBar.addClassName("navigation-bar");
         navBar.setWidthFull();
-        navBar.getStyle().set("background-color", "#f0f0f0").set("padding", "10px");
         return navBar;
     }
 
-    // Analytics summary (mock data)
+    // Analytics summary (styled)
     private VerticalLayout createAnalyticsSummary() {
         VerticalLayout summary = new VerticalLayout();
-        summary.add(new H1("Summary"));
-        summary.add(new Div(new Div("Users: 500"), new Div("Active Sessions: 120"), new Div("Revenue: $15,000")));
-        summary.getStyle().set("padding", "10px").set("background-color", "#fafafa");
+        summary.addClassName("analytics-summary");
+        summary.add(new H5("Summary"));
+        summary.add(new Div(new Span("Users: 500"), new Span("Active Sessions: 120"), new Span("Revenue: $15,000")));
+        summary.getStyle().set("padding", "15px").set("background-color", "#f8f9fa").set("border-radius", "5px");
         return summary;
     }
 
-    // Mock data grid
-    private Grid<ServiceData> createMockDataGrid() {
+    // Styled mock data grid
+    private Grid<ServiceData> createStyledMockDataGrid() {
         Grid<ServiceData> grid = new Grid<>(ServiceData.class);
+        grid.addClassName("styled-data-grid");
+        grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS, GridVariant.LUMO_ROW_STRIPES);
         grid.setItems(
-                new ServiceData("Service A", "Healthy", 99.9),
-                new ServiceData("Service B", "Stable", 95.0),
-                new ServiceData("Service C", "Unstable", 85.5)
+            new ServiceData("Service A", "Healthy", 99.9),
+            new ServiceData("Service B", "Stable", 95.0),
+            new ServiceData("Service C", "Unstable", 85.5)
         );
         grid.setColumns("serviceName", "status", "uptime");
         return grid;
