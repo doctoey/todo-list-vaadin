@@ -9,10 +9,13 @@ import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 
 @Route("admin/dashboard")
-public class AdminDashboardView extends VerticalLayout {
+public class AdminDashboardView extends VerticalLayout implements BeforeEnterObserver {
 
     public AdminDashboardView() {
         // Page title
@@ -41,6 +44,11 @@ public class AdminDashboardView extends VerticalLayout {
 
         mainContent.add(leftPanel, rightPanel);
 
+        // Logout button
+        Button logoutButton = new Button("Logout", e -> logout());
+        logoutButton.addClassName("logout-button");
+        logoutButton.getStyle().set("align-self", "center");
+
         // Footer
         Div footer = new Div();
         footer.setText("© 2024 Your Company");
@@ -48,7 +56,12 @@ public class AdminDashboardView extends VerticalLayout {
 
         // Add components to the main layout
         addClassName("dashboard-layout");
-        add(title, navigationBar, mainContent, footer);
+        add(title, navigationBar, mainContent, logoutButton, footer);
+    }
+
+    private void logout() {
+        VaadinSession.getCurrent().close();
+        getUI().ifPresent(ui -> ui.navigate(LoginView.class));
     }
 
     // Navigation bar
@@ -78,12 +91,23 @@ public class AdminDashboardView extends VerticalLayout {
         grid.addClassName("styled-data-grid");
         grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS, GridVariant.LUMO_ROW_STRIPES);
         grid.setItems(
-            new ServiceData("Service A", "Healthy", 99.9),
-            new ServiceData("Service B", "Stable", 95.0),
-            new ServiceData("Service C", "Unstable", 85.5)
+                new ServiceData("Service A", "Healthy", 99.9),
+                new ServiceData("Service B", "Stable", 95.0),
+                new ServiceData("Service C", "Unstable", 85.5)
         );
         grid.setColumns("serviceName", "status", "uptime");
         return grid;
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        if (!isUserAuthenticated()) {
+            event.rerouteTo(LoginView.class);
+        }
+    }
+
+    private boolean isUserAuthenticated() {
+        return VaadinSession.getCurrent().getAttribute("authenticatedUser") != null;
     }
 
     // Mock data class
