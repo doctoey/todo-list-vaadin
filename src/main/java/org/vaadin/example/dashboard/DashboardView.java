@@ -3,11 +3,7 @@ package org.vaadin.example.dashboard;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Footer;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Header;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -16,12 +12,15 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import java.util.Arrays;
 import java.util.List;
 
 @PageTitle("Dashboard")
 @Route("admin")
 public class DashboardView extends Div {
+
+    private static final String BACKGROUND_COLOR_DARK = "#333";
+    private static final String BACKGROUND_COLOR_LIGHT = "#f8f9fa";
+    private static final String COLOR_WHITE = "white";
 
     public DashboardView() {
         addClassName("dashboard-view");
@@ -30,10 +29,11 @@ public class DashboardView extends Div {
         HorizontalLayout mainLayout = new HorizontalLayout();
         mainLayout.setSizeFull();
 
-        mainLayout.add(createSidebar());
+        Component sidebar = createSidebar();
+        Component mainContent = createMainContent();
 
-        mainLayout.add(createMainContent());
-        mainLayout.setFlexGrow(1, createMainContent());
+        mainLayout.add(sidebar, mainContent);
+        mainLayout.setFlexGrow(1, mainContent);
 
         add(createNavbar(), mainLayout, createFooter());
     }
@@ -42,35 +42,43 @@ public class DashboardView extends Div {
         HorizontalLayout navbar = new HorizontalLayout();
         navbar.setWidthFull();
         navbar.setPadding(true);
-        navbar.getStyle().set("background-color", "#333");
-        navbar.getStyle().set("color", "white");
+        navbar.getStyle().set("background-color", BACKGROUND_COLOR_DARK);
+        navbar.getStyle().set("color", COLOR_WHITE);
 
         H2 logo = new H2("Admin Dashboard");
-        logo.getStyle().set("color", "white");
+        logo.getStyle().set("color", COLOR_WHITE);
 
         Button logoutButton = new Button("Logout", VaadinIcon.SIGN_OUT.create());
-        logoutButton.getStyle().set("color", "white");
+        logoutButton.addClickListener(e -> logout());
+        logoutButton.getStyle().set("color", COLOR_WHITE);
         logoutButton.getElement().getThemeList().add("contrast");
 
-        navbar.add(logo);
-        navbar.add(logoutButton);
+        navbar.add(logo, logoutButton);
         navbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
         return new Header(navbar);
+    }
+
+    private void logout() {
+        // Add logout logic
+        System.out.println("Logout clicked");
     }
 
     private Component createSidebar() {
         VerticalLayout sidebar = new VerticalLayout();
         sidebar.setWidth("250px");
         sidebar.setPadding(true);
-        sidebar.getStyle().set("background-color", "#f8f9fa");
+        sidebar.getStyle().set("background-color", BACKGROUND_COLOR_LIGHT);
 
-        Button dashboardButton = new Button("Dashboard", VaadinIcon.DASHBOARD.create());
-        Button settingsButton = new Button("Settings", VaadinIcon.COG.create());
-        Button profileButton = new Button("Profile", VaadinIcon.USER.create());
+        Button dashboardButton = createSidebarButton("Dashboard", VaadinIcon.DASHBOARD);
+        Button settingsButton = createSidebarButton("Settings", VaadinIcon.COG);
+        Button profileButton = createSidebarButton("Profile", VaadinIcon.USER);
 
         sidebar.add(dashboardButton, settingsButton, profileButton);
-        sidebar.setSpacing(true);
         return sidebar;
+    }
+
+    private Button createSidebarButton(String text, VaadinIcon icon) {
+        return new Button(text, icon.create());
     }
 
     private Component createMainContent() {
@@ -79,10 +87,7 @@ public class DashboardView extends Div {
         layout.setSpacing(true);
         layout.setSizeFull();
 
-        layout.add(createHighlightSection());
-
-        layout.add(createServiceHealth(), createResponseTimes());
-
+        layout.add(createHighlightSection(), createServiceHealth(), createResponseTimes());
         return layout;
     }
 
@@ -90,8 +95,8 @@ public class DashboardView extends Div {
         HorizontalLayout footer = new HorizontalLayout();
         footer.setWidthFull();
         footer.setPadding(true);
-        footer.getStyle().set("background-color", "#333");
-        footer.getStyle().set("color", "white");
+        footer.getStyle().set("background-color", BACKGROUND_COLOR_DARK);
+        footer.getStyle().set("color", COLOR_WHITE);
         footer.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 
         footer.add(new Span("© 2024 Your Company. All rights reserved."));
@@ -104,36 +109,27 @@ public class DashboardView extends Div {
         highlights.setPadding(true);
         highlights.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
 
-        highlights.add(createHighlight("Current users", "745", 33.7),
+        highlights.add(
+                createHighlight("Current users", "745", 33.7),
                 createHighlight("View events", "54.6k", -112.45),
                 createHighlight("Conversion rate", "18%", 3.9),
-                createHighlight("Custom metric", "-123.45", 0.0));
+                createHighlight("Custom metric", "-123.45", 0.0)
+        );
 
         return highlights;
     }
 
     private Component createHighlight(String title, String value, Double percentage) {
-        VaadinIcon icon = VaadinIcon.ARROW_UP;
-        String prefix = "";
-        String badgeTheme = "badge";
-
-        if (percentage == 0) {
-            prefix = "±";
-        } else if (percentage > 0) {
-            prefix = "+";
-            badgeTheme += " success";
-        } else if (percentage < 0) {
-            icon = VaadinIcon.ARROW_DOWN;
-            badgeTheme += " error";
-        }
+        String prefix = percentage > 0 ? "+" : percentage < 0 ? "-" : "±";
+        String theme = percentage > 0 ? "success" : percentage < 0 ? "error" : "neutral";
 
         H2 header = new H2(title);
         Span valueSpan = new Span(value);
         valueSpan.addClassName("highlight-value");
 
-        Icon trendIcon = icon.create();
+        Icon trendIcon = percentage >= 0 ? VaadinIcon.ARROW_UP.create() : VaadinIcon.ARROW_DOWN.create();
         Span badge = new Span(trendIcon, new Span(prefix + percentage));
-        badge.getElement().getThemeList().add(badgeTheme);
+        badge.getElement().getThemeList().add("badge " + theme);
 
         VerticalLayout highlight = new VerticalLayout(header, valueSpan, badge);
         highlight.setSpacing(false);
@@ -143,102 +139,44 @@ public class DashboardView extends Div {
     }
 
     private Component createServiceHealth() {
-        H2 header = new H2("Service health");
+        Grid<ServiceHealth> grid = new Grid<>(ServiceHealth.class, false);
+        grid.addColumn(ServiceHealth::status).setHeader("Status"); // Accessor method for status
+        grid.addColumn(ServiceHealth::city).setHeader("City");
+        grid.addColumn(ServiceHealth::input).setHeader("Input");
+        grid.addColumn(ServiceHealth::output).setHeader("Output");
 
-        Grid<ServiceHealth> grid = new Grid<>(ServiceHealth.class);
-        grid.setColumns("status", "city", "input", "output");
-        grid.getColumnByKey("status").setHeader("Status");
-        grid.getColumnByKey("city").setHeader("City");
-        grid.getColumnByKey("input").setHeader("Input");
-        grid.getColumnByKey("output").setHeader("Output");
-
-        grid.setItems(getServiceHealthData());
-
-        VerticalLayout layout = new VerticalLayout(header, grid);
-        layout.setSpacing(true);
-        return layout;
+        grid.setItems(ServiceHealth.sampleData());
+        return new VerticalLayout(new H2("Service health"), grid);
     }
 
     private Component createResponseTimes() {
-        H2 header = new H2("Response times");
+        Grid<ResponseTime> grid = new Grid<>(ResponseTime.class, false);
 
-        Grid<ResponseTime> grid = new Grid<>(ResponseTime.class);
-        grid.setColumns("system", "time");
-        grid.getColumnByKey("system").setHeader("System");
-        grid.getColumnByKey("time").setHeader("Response Time (ms)");
+        grid.addColumn(ResponseTime::system).setHeader("System");
+        grid.addColumn(ResponseTime::time).setHeader("Response Time (ms)");
 
-        grid.setItems(getResponseTimeData());
-
-        VerticalLayout layout = new VerticalLayout(header, grid);
-        layout.setSpacing(true);
-        return layout;
+        grid.setItems(ResponseTime.sampleData());
+        return new VerticalLayout(new H2("Response times"), grid);
     }
 
-    private List<ServiceHealth> getServiceHealthData() {
-        return Arrays.asList(
-                new ServiceHealth(ServiceHealth.Status.EXCELLENT, "Berlin", 324, 1540),
-                new ServiceHealth(ServiceHealth.Status.OK, "London", 311, 1320),
-                new ServiceHealth(ServiceHealth.Status.FAILING, "New York", 300, 1219)
-        );
-    }
-
-    private List<ResponseTime> getResponseTimeData() {
-        return Arrays.asList(
-                new ResponseTime("System 1", 120),
-                new ResponseTime("System 2", 135),
-                new ResponseTime("System 3", 150)
-        );
-    }
-
-    public static class ServiceHealth {
-        public enum Status {
-            EXCELLENT, OK, FAILING
-        }
-
-        private final Status status;
-        private final String city;
-        private final int input;
-        private final int output;
-
-        public ServiceHealth(Status status, String city, int input, int output) {
-            this.status = status;
-            this.city = city;
-            this.input = input;
-            this.output = output;
-        }
-
-        public Status getStatus() {
-            return status;
-        }
-
-        public String getCity() {
-            return city;
-        }
-
-        public int getInput() {
-            return input;
-        }
-
-        public int getOutput() {
-            return output;
+    // Static data classes with sample data
+    public record ServiceHealth(String status, String city, int input, int output) {
+        public static List<ServiceHealth> sampleData() {
+            return List.of(
+                    new ServiceHealth("EXCELLENT", "Berlin", 324, 1540),
+                    new ServiceHealth("OK", "London", 311, 1320),
+                    new ServiceHealth("FAILING", "New York", 300, 1219)
+            );
         }
     }
 
-    public static class ResponseTime {
-        private final String system;
-        private final int time;
-
-        public ResponseTime(String system, int time) {
-            this.system = system;
-            this.time = time;
-        }
-
-        public String getSystem() {
-            return system;
-        }
-
-        public int getTime() {
-            return time;
+    public record ResponseTime(String system, int time) {
+        public static List<ResponseTime> sampleData() {
+            return List.of(
+                    new ResponseTime("System 1", 120),
+                    new ResponseTime("System 2", 135),
+                    new ResponseTime("System 3", 150)
+            );
         }
     }
 }

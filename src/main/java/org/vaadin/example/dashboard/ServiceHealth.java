@@ -1,26 +1,16 @@
 package org.vaadin.example.dashboard;
 
-/**
- * Simple DTO class for the inbox list to demonstrate complex object data
- */
+import java.util.List;
+
 public class ServiceHealth {
 
     private Status status;
-
     private String city;
-
     private int input;
-
     private int output;
 
-    private String theme;
-
-    enum Status {
+    public enum Status {
         EXCELLENT, OK, FAILING;
-    }
-
-    public ServiceHealth() {
-
     }
 
     public ServiceHealth(Status status, String city, int input, int output) {
@@ -62,4 +52,15 @@ public class ServiceHealth {
         this.output = output;
     }
 
+    public String getStatusAsString() {
+        return status != null ? status.name() : "UNKNOWN";
+    }
+
+    public static List<ServiceHealth> sampleData() {
+        return List.of(
+                new ServiceHealth(Status.EXCELLENT, "Berlin", 324, 1540),
+                new ServiceHealth(Status.OK, "London", 311, 1320),
+                new ServiceHealth(Status.FAILING, "New York", 300, 1219)
+        );
+    }
 }
