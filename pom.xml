@@ -14,12 +14,12 @@
         <vaadin.version>24.6.11</vaadin.version>
         <tomcat.version>10.1.55</tomcat.version>
         <netty.version>4.1.135.Final</netty.version>
-        <jackson.version>2.18.3</jackson.version>
+        <jackson.version>2.18.9</jackson.version>
         <spring-framework.version>6.2.3</spring-framework.version>
         <spring-security.version>6.4.10</spring-security.version>
         <logback.version>1.5.16</logback.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
-        <assertj.version>3.27.3</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <commons-configuration2.version>2.11.0</commons-configuration2.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
