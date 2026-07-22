@@ -13,7 +13,7 @@
         <java.version>17</java.version>
         <vaadin.version>24.6.5</vaadin.version>
         <tomcat.version>10.1.55</tomcat.version>
-        <netty.version>4.1.128.Final</netty.version>
+        <netty.version>4.1.135.Final</netty.version>
         <jackson.version>2.18.3</jackson.version>
         <spring-framework.version>6.2.3</spring-framework.version>
         <spring-security.version>6.4.10</spring-security.version>
