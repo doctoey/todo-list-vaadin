@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.3</version>
+        <version>3.4.5</version>
         <relativePath/>
     </parent>
 
@@ -28,6 +28,9 @@
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <assertj.version>3.27.7</assertj.version>
         <commons-configuration2.version>2.11.0</commons-configuration2.version>
+        <nimbus-jose-jwt.version>9.37.4</nimbus-jose-jwt.version>
+        <reactor-netty.version>1.2.8</reactor-netty.version>
+        <opentelemetry.version>1.62.0</opentelemetry.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
@@ -103,6 +106,21 @@
                 <artifactId>commons-configuration2</artifactId>
                 <version>${commons-configuration2.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${nimbus-jose-jwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.projectreactor.netty</groupId>
+                <artifactId>reactor-netty-http</artifactId>
+                <version>${reactor-netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-api</artifactId>
+                <version>${opentelemetry.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -129,6 +147,11 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-testbench-junit5</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mvnpm.at.vaadin</groupId>
+            <artifactId>vertical-layout</artifactId>
+            <version>25.2.3</version>
         </dependency>
     </dependencies>
 
